@@ -19,3 +19,5 @@ A professional, high-performance IPTV application designed natively for LG webOS
 ## Building
 To package as an IPK file for LG webOS, utilize the `ares-package` CLI tool:
 `ares-package . -o ./dist`
+## note
+- The app is still in its early stages and I'm working on developing it further. For any issues, you can contact me via tg "mluona" .
