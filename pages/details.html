@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=1920, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>mluona IPTV - Details</title>
+    <link rel="stylesheet" href="../assets/base.css">
+    <style>
+        body { background: #000; overflow: hidden; margin: 0; padding: 0; font-family: 'Inter', sans-serif; color: white; }
+        
+        .backdrop { position: absolute; inset: 0; z-index: 0; background-size: cover; background-position: center top; filter: brightness(0.4); }
+        .backdrop::after { content: ''; position: absolute; inset: 0; background: linear-gradient(to right, #000 20%, transparent 80%), linear-gradient(to top, #000 10%, transparent 50%); }
+        
+        .container { position: relative; z-index: 1; height: 100vh; display: flex; flex-direction: column; padding: 60px; }
+        
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; }
+        .icon-btn { width: 70px; height: 70px; border-radius: 16px; background: rgba(255,255,255,0.1); border: 2px solid transparent; color: white; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(10px); }
+        .icon-btn.focusable.focused { border-color: var(--primary); background: rgba(38,203,66,0.2); }
+        
+        .content { display: flex; gap: 60px; flex: 1; }
+        .poster { width: 400px; height: 600px; border-radius: 20px; background-size: cover; background-position: center; box-shadow: 0 20px 40px rgba(0,0,0,0.5); flex-shrink: 0; }
+        
+        .info { flex: 1; display: flex; flex-direction: column; }
+        .title { font-size: 64px; font-weight: bold; margin: 0 0 10px 0; line-height: 1.1; }
+        
+        .meta { display: flex; gap: 20px; color: #aaa; font-size: 24px; margin-bottom: 30px; align-items: center; }
+        .meta-item { display: flex; align-items: center; gap: 8px; }
+        .rating { color: #f1c40f; font-weight: bold; }
+        
+        .plot { font-size: 22px; line-height: 1.6; color: #ddd; margin-bottom: 40px; max-width: 1000px; display: -webkit-box; -webkit-line-clamp: 5; -webkit-box-orient: vertical; overflow: hidden; }
+        
+        .cast { font-size: 20px; color: #aaa; margin-bottom: 40px; }
+        .cast span { color: white; margin-left: 10px; }
+        
+        .actions { display: flex; gap: 20px; margin-bottom: 40px; }
+        .btn { padding: 0 40px; height: 70px; border-radius: 12px; font-size: 24px; font-weight: bold; display: flex; align-items: center; gap: 15px; border: 2px solid transparent; cursor: pointer; }
+        .btn-primary { background: var(--primary); color: #000; }
+        .btn-outline { background: rgba(255,255,255,0.1); color: white; backdrop-filter: blur(10px); }
+        .btn.focusable.focused { transform: scale(1.05); box-shadow: 0 0 20px rgba(38,203,66,0.4); border-color: white; }
+        
+        .episodes-section { flex: 1; display: none; flex-direction: column; }
+        .episodes-section.visible { display: flex; }
+        .episodes-header { font-size: 32px; font-weight: bold; margin-bottom: 20px; }
+        
+        .episodes-list { display: flex; flex-direction: column; gap: 15px; overflow-y: auto; flex: 1; padding-right: 20px; }
+        .episode-item { display: flex; align-items: center; justify-content: space-between; background: rgba(255,255,255,0.05); padding: 20px 30px; border-radius: 12px; border: 2px solid transparent; }
+        .episode-item.focusable.focused { border-color: var(--primary); background: rgba(38,203,66,0.1); transform: scale(1.02); }
+        .ep-title { font-size: 24px; font-weight: 500; }
+        .ep-duration { font-size: 20px; color: #aaa; }
+    </style>
+</head>
+<body>
+    <div class="backdrop" id="backdrop"></div>
+    
+    <div class="container">
+        <div class="header">
+            <button class="icon-btn focusable" onclick="window.history.back()">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+            </button>
+            <img src="../assets/logo.svg" alt="mluona" style="height: 40px; display: none;"> <!-- Hidden placeholder -->
+        </div>
+        
+        <div class="content">
+            <div class="poster" id="poster"></div>
+            
+            <div class="info">
+                <h1 class="title" id="title">Loading...</h1>
+                
+                <div class="meta">
+                    <div class="meta-item rating">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" stroke="none"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+                        <span id="rating">0.0</span>
+                    </div>
+                    <div class="meta-item" id="year"></div>
+                    <div class="meta-item" id="genre"></div>
+                </div>
+                
+                <div class="plot" id="plot"></div>
+                
+                <div class="cast" id="cast-container" style="display: none;">
+                    Cast: <span id="cast"></span>
+                </div>
+                
+                <div class="actions">
+                    <button class="btn btn-primary focusable" id="play-btn" style="display: none;">
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor" stroke="none"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                        Play
+                    </button>
+                    <button class="btn btn-outline focusable" id="trailer-btn" style="display: none;">
+                        Trailer
+                    </button>
+                </div>
+                
+                <div class="episodes-section" id="episodes-section">
+                    <div class="episodes-header">Episodes</div>
+                    <div class="episodes-list" id="episodes-list">
+                        <!-- Episodes injected here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="../api/xtream.js"></script>
+    <script src="../js/dpad.js"></script>
+    <script src="../js/details.js"></script>
+</body>
+</html>

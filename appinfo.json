@@ -1,0 +1,12 @@
+{
+  "id": "com.mluona.iptv",
+  "version": "1.0.0",
+  "vendor": "mluona",
+  "type": "web",
+  "main": "index.html",
+  "title": "mluona IPTV",
+  "icon": "icon.png",
+  "resolution": "1920x1080",
+  "appDescription": "mluona IPTV Application for LG webOS",
+  "transparent": false
+}

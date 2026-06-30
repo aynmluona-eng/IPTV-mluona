@@ -1,0 +1,56 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700&display=swap');
+
+:root {
+  --bg-base: #111315;
+  --surface: #1B1E22;
+  --card: #20242A;
+  --card-focus: #2A2F36;
+  --primary: #00C853;
+  --danger: #E53935;
+  --warning: #FFB300;
+  --text-main: #FFFFFF;
+  --text-secondary: #AAB2BC;
+  --border: #2D3239;
+  --radius: 14px;
+}
+
+body {
+  background-color: var(--bg-base);
+  color: var(--text-main);
+  font-family: 'Noto Sans', sans-serif;
+  margin: 0;
+  padding: 0;
+  width: 1920px;
+  height: 1080px;
+  overflow: hidden;
+  box-sizing: border-box;
+  user-select: none;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+.focusable {
+  transition: transform 150ms ease, border 150ms ease, background-color 150ms ease, box-shadow 150ms ease;
+  border: 2px solid transparent;
+  outline: none;
+  cursor: pointer;
+}
+
+.focusable.focused {
+  transform: scale(1.04);
+  border: 2px solid var(--primary) !important;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+  z-index: 10;
+}
+
+.input-group.focused {
+  background-color: var(--card-focus);
+}
+
+.text-primary { color: var(--primary); }
+.bg-primary { background-color: var(--primary); }
+.text-secondary { color: var(--text-secondary); }
+.bg-surface { background-color: var(--surface); }
+.bg-card { background-color: var(--card); }

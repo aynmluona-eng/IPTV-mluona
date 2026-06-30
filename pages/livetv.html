@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=1920, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>mluona IPTV - Live TV</title>
+    <link rel="stylesheet" href="../assets/base.css">
+    <link rel="stylesheet" href="../assets/livetv.css">
+</head>
+<body>
+    <div class="livetv-container">
+        <!-- Header -->
+        <header class="header">
+            <div class="logo">mluona <span class="text-primary">IPTV</span></div>
+            <div class="actions">
+                <button class="action-btn focusable">
+                    <span class="icon">🔍</span> Search
+                </button>
+                <button class="action-btn focusable">
+                    <span class="icon">♡</span> Favorites
+                </button>
+                <button class="icon-btn focusable">⋮</button>
+            </div>
+        </header>
+
+        <h2 class="page-title">Live TV</h2>
+
+        <!-- Main Layout -->
+        <div class="layout">
+            
+            <!-- Sidebar / Categories -->
+            <div class="sidebar">
+                <div class="sidebar-header">
+                    <button class="filter-btn active focusable">All <span class="badge" id="cat-total">0</span></button>
+                    <button class="filter-btn focusable">Groups ≡</button>
+                </div>
+                <div class="categories-list" id="categories-container">
+                    <div style="padding: 20px; color: white;">Loading Categories...</div>
+                </div>
+            </div>
+
+            <!-- Channel List -->
+            <div class="channels">
+                <div class="channels-list" id="channels-container">
+                    <div style="padding: 20px; color: white;">Select a category...</div>
+                </div>
+            </div>
+
+            <!-- Preview & Details -->
+            <div class="preview-section">
+                <!-- Video Player Preview -->
+                <div class="video-preview focusable" onclick="window.playCurrentChannel()">
+                    <div class="live-badge">LIVE</div>
+                    <div class="chan-badge" id="preview-badge">-</div>
+                    <div class="play-overlay">▶</div>
+                </div>
+
+                <!-- Channel Details -->
+                <div class="details-card">
+                    <div class="details-header">
+                        <div>
+                            <h2 id="details-title">Select Channel</h2>
+                            <p class="text-primary" id="details-subtitle">-</p>
+                        </div>
+                        <div class="star-icon">☆</div>
+                    </div>
+                    
+                    <div class="progress-section">
+                        <p class="time">Live Stream</p>
+                        <div class="progress-bar-container">
+                            <div class="progress-bar">
+                                <div class="progress" style="width: 100%;"></div>
+                            </div>
+                            <span class="time-left"></span>
+                        </div>
+                    </div>
+
+                    <div class="actions-row">
+                        <button class="action-card focusable">
+                            <span class="icon">📺</span> EPG
+                        </button>
+                        <button class="action-card focusable">
+                            <span class="icon">⧨</span> Filter
+                        </button>
+                        <button class="action-card focusable">
+                            <span class="icon">⇅</span> Sort
+                        </button>
+                        <button class="action-card focusable">
+                            <span class="icon">⋮</span> Options
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bottom Remote Hint Bar -->
+        <div class="bottom-bar">
+            <div class="hints-left">
+                <div class="hint"><span class="key ok">OK</span> Play</div>
+                <div class="hint"><span class="key yellow"></span> Add to Favorites</div>
+                <div class="hint"><span class="key blue"></span> EPG</div>
+            </div>
+            <div class="hints-right">
+                <div class="hint"><span class="key info">INFO</span> Details</div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="../api/xtream.js"></script>
+    <script src="../js/dpad.js"></script>
+    <script src="../js/livetv.js"></script>
+    <script>
+        document.addEventListener('tvBackButton', () => {
+            window.location.href = './Dashboard.html';
+        });
+    </script>
+</body>
+</html>

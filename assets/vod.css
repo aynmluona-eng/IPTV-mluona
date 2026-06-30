@@ -1,0 +1,47 @@
+.vod-container { height: 100vh; background: var(--bg-base); position: relative; }
+.layout-sidebar { display: flex; flex-direction: row; }
+
+/* Sidebar */
+.sidebar { width: 400px; background: rgba(0,0,0,0.3); border-right: 1px solid var(--border); display: flex; flex-direction: column; padding: 40px 0; }
+.sidebar .logo { font-size: 32px; font-weight: bold; margin-bottom: 20px; padding: 0 40px; }
+.sidebar-title { font-size: 42px; font-weight: bold; margin: 0 0 30px 0; padding: 0 40px; }
+.sidebar-actions { padding: 0 40px 30px; }
+.sidebar-nav { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; padding: 0 20px; }
+.nav-item { background: transparent; border: 2px solid transparent; color: var(--text-secondary); padding: 15px 20px; border-radius: 12px; font-size: 22px; font-weight: bold; text-align: left; display: flex; align-items: center; transition: all 0.2s; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; cursor: pointer; }
+.nav-item.active { background: var(--surface); color: white; }
+.nav-item.focusable.focused, .nav-item:hover { background: var(--card-focus); border-color: var(--primary); color: white; transform: scale(1.02); }
+
+/* Main Content */
+.main-content { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+.main-header { padding: 40px 60px 20px; display: flex; justify-content: space-between; align-items: center; }
+.main-header h3 { font-size: 32px; margin: 0; }
+
+.actions { display: flex; gap: 20px; }
+.action-btn { background: var(--surface); border: 2px solid var(--border); color: white; padding: 15px 30px; border-radius: 35px; font-size: 22px; font-weight: bold; display: flex; align-items: center; gap: 10px; cursor: pointer; }
+.action-btn.focusable.focused, .action-btn:hover { border-color: var(--primary); background: rgba(38,203,66,0.1); }
+.icon-btn { width: 60px; height: 60px; border-radius: 30px; background: var(--surface); border: 2px solid var(--border); color: white; font-size: 24px; display: flex; align-items: center; justify-content: center;}
+
+.grid-container { flex: 1; padding: 0 60px 120px; overflow-y: auto; overflow-x: hidden; scroll-behavior: smooth; }
+.poster-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 30px; padding: 10px; }
+
+.poster-item { background: var(--surface); border: 2px solid transparent; border-radius: 16px; padding: 12px; display: flex; flex-direction: column; text-align: left; color: white; transition: all 150ms ease; cursor: pointer; }
+.poster-item:hover { border-color: rgba(255,255,255,0.3); transform: scale(1.02); }
+.poster-item.focusable.focused { background: var(--card-focus); border-color: var(--primary); transform: scale(1.05); z-index: 10; box-shadow: 0 15px 30px rgba(0,0,0,0.6); }
+
+.poster-img-container { width: 100%; aspect-ratio: 2/3; position: relative; border-radius: 12px; overflow: hidden; margin-bottom: 15px; background: #111; }
+.poster-img { width: 100%; height: 100%; object-fit: cover; }
+.star-badge { position: absolute; top: 15px; right: 15px; font-size: 24px; text-shadow: 0 2px 4px rgba(0,0,0,0.8); }
+.ep-badge { position: absolute; top: 15px; right: 15px; background: var(--primary); color: var(--bg-base); font-size: 18px; font-weight: bold; padding: 4px 10px; border-radius: 8px; }
+
+.poster-info h3 { margin: 0 0 5px 0; font-size: 24px; font-weight: bold; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.poster-info p { margin: 0; font-size: 18px; color: var(--text-secondary); }
+
+.bottom-bar { position: absolute; bottom: 30px; left: 60px; right: 60px; background: rgba(17, 19, 21, 0.9); padding: 15px 30px; border-radius: 15px; border: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; pointer-events: none; z-index: 20; }
+.hints-left, .hints-right, .hints-center { display: flex; gap: 40px; align-items: center; }
+.hint { display: flex; align-items: center; gap: 15px; font-size: 20px; font-weight: 500; }
+.key { display: inline-flex; align-items: center; justify-content: center; border-radius: 6px; font-weight: bold; font-size: 16px; }
+.key.ok { background: var(--primary); color: var(--bg-base); width: 45px; height: 30px; }
+.key.danger { background: var(--danger); width: 45px; height: 30px; }
+.key.info { background: var(--card); border: 1px solid var(--border); color: var(--text-secondary); padding: 5px 15px; height: 30px; }
+
+::-webkit-scrollbar { display: none; }

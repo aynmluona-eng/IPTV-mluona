@@ -1,0 +1,9 @@
+.coming-soon-container { height: 100vh; display: flex; flex-direction: column; background: var(--bg-base); }
+.header { padding: 40px 60px; display: flex; justify-content: space-between; align-items: center; }
+.logo { font-size: 32px; font-weight: bold; }
+.actions { display: flex; gap: 20px; }
+.icon-btn { width: 70px; height: 70px; border-radius: 35px; background: var(--surface); border: 2px solid var(--border); color: white; font-size: 32px; display: flex; align-items: center; justify-content: center;}
+
+.center-content { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+.icon-huge { font-size: 120px; }
+.btn { background: var(--primary); color: var(--bg-base); font-size: 24px; font-weight: bold; text-align: center; padding: 20px 40px; border-radius: 12px; border: 2px solid transparent; }

@@ -1,0 +1,8 @@
+{
+  "id": "com.mluona.iptv",
+  "title": "mluona IPTV",
+  "version": "1.0.0",
+  "description": "Professional IPTV App for LG webOS",
+  "type": "web",
+  "iconUrl": "icon.png"
+}

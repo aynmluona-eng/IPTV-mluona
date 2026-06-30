@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=1920, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>mluona IPTV - Player</title>
+    <link rel="stylesheet" href="../assets/base.css">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        body { background: #000; overflow: hidden; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
+        .player-container { width: 100vw; height: 100vh; position: relative; }
+        .video-bg { width: 100%; height: 100%; object-fit: cover; }
+        
+        .controls-overlay { position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: space-between; opacity: 1; transition: opacity 0.5s; background: linear-gradient(to bottom, rgba(0,0,0,0.8) 0%, transparent 15%, transparent 70%, rgba(0,0,0,0.9) 100%); }
+        .controls-overlay.hidden { opacity: 0; pointer-events: none; }
+        
+        .top-bar { padding: 40px 60px; display: flex; justify-content: space-between; align-items: center; }
+        .icon-btn { width: 60px; height: 60px; border-radius: 30px; background: rgba(255,255,255,0.1); border: 2px solid transparent; color: white; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(10px); cursor: pointer; transition: all 0.2s; }
+        .icon-btn.focusable.focused, .icon-btn:hover { border-color: var(--primary); background: rgba(38,203,66,0.2); transform: scale(1.1); }
+        .top-icons { display: flex; gap: 20px; }
+        
+        .bottom-controls { margin: 0 60px 40px; display: flex; flex-direction: column; gap: 20px; }
+        
+        .timeline-container { position: relative; display: flex; align-items: center; width: 100%; cursor: pointer; }
+        .timeline-track { width: 100%; height: 8px; background: rgba(255,255,255,0.3); border-radius: 4px; overflow: hidden; }
+        .timeline-fill { width: 0%; height: 100%; background: var(--primary); transition: width 0.1s linear; }
+        .timeline-thumb { position: absolute; left: 0%; margin-left: -8px; width: 16px; height: 16px; background: white; border-radius: 50%; box-shadow: 0 0 10px rgba(0,0,0,0.5); display: none; }
+        
+        .bottom-actions { display: flex; align-items: center; justify-content: space-between; }
+        
+        .play-controls { display: flex; align-items: center; gap: 30px; }
+        .play-btn { width: 70px; height: 70px; border-radius: 35px; background: white; border: none; color: black; display: flex; align-items: center; justify-content: center; flex-shrink: 0; cursor: pointer; transition: transform 0.2s; }
+        .play-btn.focusable.focused, .play-btn:hover { transform: scale(1.1); box-shadow: 0 0 20px rgba(255,255,255,0.4); }
+        
+        .time-display { color: white; font-size: 20px; font-variant-numeric: tabular-nums; }
+        
+        .right-controls { display: flex; align-items: center; gap: 20px; }
+        
+        /* Loading Spinner */
+        .loading-overlay { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; background: rgba(0,0,0,0.5); z-index: 10; transition: opacity 0.3s; }
+        .spinner { width: 80px; height: 80px; border: 6px solid rgba(255,255,255,0.1); border-top-color: var(--primary); border-radius: 50%; animation: spin 1s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        
+        /* Error Message */
+        .error-message { position: absolute; inset: 0; display: none; flex-direction: column; align-items: center; justify-content: center; background: rgba(0,0,0,0.8); z-index: 20; color: white; text-align: center; }
+        .error-icon { color: #e74c3c; margin-bottom: 20px; }
+        .error-text { font-size: 28px; font-weight: bold; margin-bottom: 10px; }
+        .error-sub { font-size: 20px; color: #aaa; margin-bottom: 30px; }
+        .retry-btn { padding: 15px 40px; background: var(--primary); color: #000; border: none; border-radius: 12px; font-size: 20px; font-weight: bold; cursor: pointer; }
+        .retry-btn.focusable.focused { transform: scale(1.05); box-shadow: 0 0 20px rgba(38,203,66,0.4); }
+
+    </style>
+</head>
+<body>
+    <div class="player-container">
+        <!-- Real Video Background -->
+        <video id="video-player" class="video-bg" autoplay></video>
+        
+        <!-- Loading -->
+        <div class="loading-overlay" id="loading">
+            <div class="spinner"></div>
+        </div>
+        
+        <!-- Error -->
+        <div class="error-message" id="error-screen">
+            <i data-lucide="alert-circle" class="error-icon" width="80" height="80"></i>
+            <div class="error-text">Playback Error</div>
+            <div class="error-sub">Failed to load the stream. Please try again.</div>
+            <button class="retry-btn focusable" onclick="location.reload()">Retry</button>
+        </div>
+        
+        <!-- Channel Number Input Overlay -->
+        <div id="channel-input-overlay" style="position: absolute; top: 40px; right: 60px; background: rgba(0,0,0,0.8); border: 2px solid var(--primary); color: white; font-size: 40px; font-weight: bold; padding: 20px 40px; border-radius: 15px; display: none; z-index: 50;">
+            <span id="channel-input-text"></span>
+        </div>
+        
+        <!-- Controls -->
+        <div class="controls-overlay" id="controls">
+            <div class="top-bar">
+                <button class="icon-btn focusable" onclick="window.history.back()">
+                    <i data-lucide="arrow-left"></i>
+                </button>
+                <div style="color: white; font-size: 32px; font-weight: bold; text-shadow: 0 2px 10px rgba(0,0,0,0.5);" id="stream-title">Loading...</div>
+                <div class="top-icons">
+                    <button class="icon-btn focusable" title="Search">
+                        <i data-lucide="search"></i>
+                    </button>
+                    <button class="icon-btn focusable" title="EPG">
+                        <i data-lucide="list"></i>
+                    </button>
+                    <button class="icon-btn focusable" title="Settings">
+                        <i data-lucide="settings"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="bottom-controls">
+                <div class="timeline-container">
+                    <div class="timeline-track">
+                        <div class="timeline-fill" id="timeline-fill"></div>
+                    </div>
+                </div>
+                
+                <div class="bottom-actions">
+                    <div class="play-controls">
+                        <button class="play-btn focusable" id="play-pause-btn">
+                            <i data-lucide="pause" fill="currentColor" id="play-icon"></i>
+                        </button>
+                        <div class="time-display" id="time-display">00:00 / 00:00</div>
+                    </div>
+                    
+                    <div class="right-controls">
+                        <button class="icon-btn focusable" id="fullscreen-btn">
+                            <i data-lucide="maximize"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="../js/dpad.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+    <script>
+        lucide.createIcons();
+        
+        const controls = document.getElementById('controls');
+        const video = document.getElementById('video-player');
+        const titleEl = document.getElementById('stream-title');
+        const playBtn = document.getElementById('play-pause-btn');
+        const playIcon = document.getElementById('play-icon');
+        const loadingOverlay = document.getElementById('loading');
+        const errorScreen = document.getElementById('error-screen');
+        const timeDisplay = document.getElementById('time-display');
+        let timeout;
+        let isLive = false;
+        
+        const streamUrl = localStorage.getItem('current_stream_url');
+        const streamName = localStorage.getItem('current_stream_name');
+        
+        if(streamName) titleEl.textContent = streamName;
+
+        function showControls() {
+            controls.classList.remove('hidden');
+            clearTimeout(timeout);
+            timeout = setTimeout(() => {
+                if(!video.paused) controls.classList.add('hidden');
+            }, 4000);
+        }
+        
+        let rightPressCount = 0;
+        let rightPressTimer = null;
+        let enterPressCount = 0;
+        let enterPressTimer = null;
+        let channelInput = "";
+        let channelInputTimer = null;
+        
+        document.addEventListener('keydown', (e) => {
+            if (e.key >= '0' && e.key <= '9' && isLive) {
+                clearTimeout(channelInputTimer);
+                channelInput += e.key;
+                const overlay = document.getElementById('channel-input-overlay');
+                overlay.style.display = 'block';
+                document.getElementById('channel-input-text').textContent = channelInput;
+                
+                channelInputTimer = setTimeout(() => {
+                    overlay.style.display = 'none';
+                    playChannelByNum(channelInput);
+                    channelInput = "";
+                }, 2000);
+            } else if (e.key === 'Enter') {
+                e.preventDefault();
+                enterPressCount++;
+                if (enterPressCount === 1) {
+                    showControls();
+                    enterPressTimer = setTimeout(() => {
+                        enterPressCount = 0;
+                    }, 400); // Wait 400ms for second press
+                } else if (enterPressCount === 2) {
+                    clearTimeout(enterPressTimer);
+                    enterPressCount = 0;
+                    if (video.paused) video.play();
+                    else video.pause();
+                }
+            } else if (e.key === 'ArrowRight' && isLive) {
+                rightPressCount++;
+                if (rightPressCount === 1) {
+                    rightPressTimer = setTimeout(() => {
+                        rightPressCount = 0;
+                    }, 400);
+                } else if (rightPressCount === 2) {
+                    clearTimeout(rightPressTimer);
+                    rightPressCount = 0;
+                    playNextChannel();
+                }
+            } else if (e.key === 'ArrowLeft' && isLive) {
+                // Could do previous channel here
+            } else {
+                showControls();
+            }
+        });
+        
+        function playChannelByNum(numStr) {
+            const num = parseInt(numStr);
+            const channels = JSON.parse(localStorage.getItem('live_channels_list') || '[]');
+            // Try to find the exact channel number, or just by index (num - 1) if not numbered
+            // If channels are sorted, channel at index num-1 is the nth channel.
+            const targetChan = channels.find(c => parseInt(c.num) === num) || channels[num - 1];
+            if (targetChan) {
+                localStorage.setItem('current_stream_id', targetChan.stream_id);
+                const type = targetChan.stream_type || 'live';
+                localStorage.setItem('current_stream_url', `${localStorage.getItem('xtream_url')}/${type}/${localStorage.getItem('xtream_username')}/${localStorage.getItem('xtream_password')}/${targetChan.stream_id}.m3u8`);
+                localStorage.setItem('current_stream_name', targetChan.name);
+                location.reload();
+            }
+        }
+        
+        function playNextChannel() {
+            const channels = JSON.parse(localStorage.getItem('live_channels_list') || '[]');
+            const currentId = localStorage.getItem('current_stream_id');
+            if(channels.length > 0) {
+                let idx = channels.findIndex(c => c.stream_id == currentId);
+                if(idx !== -1 && idx < channels.length - 1) {
+                    const nextChan = channels[idx + 1];
+                    localStorage.setItem('current_stream_id', nextChan.stream_id);
+                    const type = nextChan.stream_type || 'live';
+                    localStorage.setItem('current_stream_url', `${localStorage.getItem('xtream_url')}/${type}/${localStorage.getItem('xtream_username')}/${localStorage.getItem('xtream_password')}/${nextChan.stream_id}.m3u8`);
+                    localStorage.setItem('current_stream_name', nextChan.name);
+                    location.reload();
+                }
+            }
+        }
+        
+        // Remove broken lines
+        document.addEventListener('mousemove', showControls);
+        showControls();
+        
+        function formatTime(seconds) {
+            if(isNaN(seconds) || !isFinite(seconds)) return "00:00";
+            const h = Math.floor(seconds / 3600);
+            const m = Math.floor((seconds % 3600) / 60);
+            const s = Math.floor(seconds % 60);
+            if(h > 0) return `${h}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+            return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+        }
+        
+        function showError() {
+            loadingOverlay.style.display = 'none';
+            errorScreen.style.display = 'flex';
+        }
+
+        // Initialize Player
+        if (streamUrl) {
+            const isM3u8 = streamUrl.includes('.m3u8');
+            isLive = streamUrl.includes('/live/') || isM3u8;
+            
+            if (isLive) {
+                timeDisplay.textContent = "LIVE";
+            }
+            
+            if (isM3u8 && Hls.isSupported()) {
+                var hls = new Hls({
+                    maxBufferSize: 50 * 1000 * 1000, // 50MB
+                    maxBufferLength: 120, // Buffer up to 120 seconds if possible
+                    maxMaxBufferLength: 1200,
+                    enableWorker: true,
+                    lowLatencyMode: false,
+                    liveSyncDuration: 30, // Increase sync duration to allow larger buffer
+                    liveMaxLatencyDuration: 60,
+                });
+                hls.loadSource(streamUrl);
+                hls.attachMedia(video);
+                hls.on(Hls.Events.MANIFEST_PARSED, function() {
+                    video.play().catch(e => console.log("HLS Play Error:", e));
+                });
+                hls.on(Hls.Events.ERROR, function(event, data) {
+                    if (data.fatal) {
+                        switch (data.type) {
+                            case Hls.ErrorTypes.NETWORK_ERROR:
+                                console.log("fatal network error encountered, try to recover");
+                                hls.startLoad();
+                                break;
+                            case Hls.ErrorTypes.MEDIA_ERROR:
+                                console.log("fatal media error encountered, try to recover");
+                                hls.recoverMediaError();
+                                break;
+                            default:
+                                hls.destroy();
+                                showError();
+                                break;
+                        }
+                    }
+                });
+            } else {
+                video.src = streamUrl;
+                video.load();
+                
+                const playPromise = video.play();
+                if (playPromise !== undefined) {
+                    playPromise.catch(error => {
+                        console.log("Native Play Error:", error);
+                    });
+                }
+            }
+        }
+        
+        video.addEventListener('playing', () => {
+            loadingOverlay.style.display = 'none';
+        });
+        
+        video.addEventListener('waiting', () => {
+            loadingOverlay.style.display = 'flex';
+        });
+        
+        video.addEventListener('error', () => {
+            showError();
+        });
+
+        playBtn.addEventListener('click', () => {
+            if (video.paused) {
+                video.play();
+                playIcon.setAttribute('data-lucide', 'pause');
+            } else {
+                video.pause();
+                playIcon.setAttribute('data-lucide', 'play');
+                playIcon.removeAttribute('fill');
+            }
+            lucide.createIcons();
+            showControls();
+        });
+        
+        video.addEventListener('play', () => {
+            playIcon.setAttribute('data-lucide', 'pause');
+            playIcon.setAttribute('fill', 'currentColor');
+            lucide.createIcons();
+        });
+        
+        video.addEventListener('pause', () => {
+            playIcon.setAttribute('data-lucide', 'play');
+            playIcon.setAttribute('fill', 'currentColor');
+            lucide.createIcons();
+            showControls();
+        });
+        
+        video.addEventListener('timeupdate', () => {
+            if(video.duration && !isLive) {
+                const percent = (video.currentTime / video.duration) * 100;
+                document.getElementById('timeline-fill').style.width = percent + '%';
+                timeDisplay.textContent = `${formatTime(video.currentTime)} / ${formatTime(video.duration)}`;
+            } else if (isLive) {
+                document.getElementById('timeline-fill').style.width = '100%';
+            }
+        });
+        
+        document.getElementById('fullscreen-btn').addEventListener('click', () => {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(err => console.log(err));
+            } else {
+                document.exitFullscreen();
+            }
+        });
+        
+        document.addEventListener('tvBackButton', () => {
+            window.history.back();
+        });
+    </script>
+</body>
+</html>

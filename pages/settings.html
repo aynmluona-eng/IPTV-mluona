@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=1920, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>mluona IPTV - Settings</title>
+    <link rel="stylesheet" href="../assets/base.css">
+    <link rel="stylesheet" href="../assets/settings.css">
+</head>
+<body>
+    <div class="settings-container">
+        <header class="header">
+            <div class="logo">mluona <span class="text-primary">IPTV</span></div>
+            <h2 class="page-title">Settings</h2>
+            <div class="actions">
+                <button class="icon-btn focusable" onclick="window.location.href='./Dashboard.html'">🏠</button>
+            </div>
+        </header>
+
+        <div class="layout">
+            <div class="sidebar">
+                <button class="setting-tab active focusable">General</button>
+                <button class="setting-tab focusable">Appearance</button>
+                <button class="setting-tab focusable">Player</button>
+                <button class="setting-tab focusable">Subtitle</button>
+                <button class="setting-tab focusable">Updates</button>
+                <button class="setting-tab focusable">Language</button>
+                <button class="setting-tab focusable">About</button>
+            </div>
+            
+            <div class="content">
+                <div class="settings-panel">
+                    <h2 style="font-size: 42px; margin-top: 0;">General Settings</h2>
+                    
+                    <div class="setting-item focusable">
+                        <div class="setting-info">
+                            <h3>Auto Start on Boot</h3>
+                            <p>Launch the app automatically when the TV turns on</p>
+                        </div>
+                        <div class="toggle active"></div>
+                    </div>
+
+                    <div class="setting-item focusable">
+                        <div class="setting-info">
+                            <h3>Clear Cache</h3>
+                            <p>Free up memory and storage used by the app</p>
+                        </div>
+                        <button class="setting-btn">Clear</button>
+                    </div>
+
+                    <div class="setting-item focusable">
+                        <div class="setting-info">
+                            <h3>Format 24-Hour Time</h3>
+                            <p>Use 24-hour format instead of AM/PM</p>
+                        </div>
+                        <div class="toggle active"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="bottom-bar">
+            <div class="hints-left">
+                <div class="hint"><span class="key danger"></span> Back</div>
+            </div>
+            <div class="hints-center">
+                <div class="hint"><span class="key ok">OK</span> Select</div>
+            </div>
+        </div>
+    </div>
+    <script src="../js/dpad.js"></script>
+    <script src="../js/settings.js"></script>
+</body>
+</html>

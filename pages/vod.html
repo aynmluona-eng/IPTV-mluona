@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=1920, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>mluona IPTV - Movies</title>
+    <link rel="stylesheet" href="../assets/base.css">
+    <link rel="stylesheet" href="../assets/vod.css">
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+    <div class="vod-container layout-sidebar">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="logo">mluona <span class="text-primary">IPTV</span></div>
+            <h2 class="sidebar-title">Movies</h2>
+            
+            <div class="sidebar-actions">
+                <button class="action-btn focusable"><i data-lucide="search"></i> Search</button>
+            </div>
+            
+            <div class="sidebar-nav" id="categories-container">
+                <button class="nav-item active focusable">All Movies</button>
+            </div>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="main-content">
+            <header class="main-header">
+                <h3 id="current-category-title">All Movies</h3>
+                <button class="action-btn focusable"><i data-lucide="filter"></i> Filter</button>
+            </header>
+
+            <div class="grid-container">
+                <div class="poster-grid" id="movies-container">
+                    <div style="padding: 20px; color: white; font-size: 24px;">Loading Movies...</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="bottom-bar">
+            <div class="hints-left">
+                <div class="hint"><span class="key danger"></span> Back</div>
+            </div>
+            <div class="hints-center">
+                <div class="hint"><span class="key ok">OK</span> Select</div>
+            </div>
+            <div class="hints-right">
+                <div class="hint"><span class="key info">≡</span> Options</div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="../api/xtream.js"></script>
+    <script src="../js/dpad.js"></script>
+    <script src="../js/vod.js"></script>
+    <script>
+        lucide.createIcons();
+        document.addEventListener('tvBackButton', () => {
+            window.location.href = './Dashboard.html';
+        });
+    </script>
+</body>
+</html>
