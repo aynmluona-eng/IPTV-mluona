@@ -1,0 +1,44 @@
+name: Build webOS IPK
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Install ares-cli
+        run: npm install -g @webos-tools/cli
+
+      - name: Package IPK
+        run: |
+          # Create a .appignore to prevent packaging unnecessary large files
+          echo ".git" > .appignore
+          echo ".github" >> .appignore
+          echo "node_modules" >> .appignore
+          echo "server.ts" >> .appignore
+          echo "tsconfig.json" >> .appignore
+          echo "*.md" >> .appignore
+          
+          # Build the IPK
+          ares-package . -o ./dist --no-minify
+
+      - name: Upload IPK Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: mluona-iptv-ipk
+          path: ./dist/*.ipk
+          retention-days: 7
